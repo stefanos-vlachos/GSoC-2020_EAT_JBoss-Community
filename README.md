@@ -49,7 +49,7 @@ Finally, I studied the support for lifecycles offered by Maven and Gradle, in or
 
 #### Phase 2
 
-During the 2nd phase of this project, I implemented basic support for integrating Gradle with the EAT framework [EAT PR 1](https://github.com/EAT-JBCOMMUNITY/EAT/pull/171).
+During the 2nd phase of this project, I implemented basic support for integrating Gradle with the EAT framework [EAT PR 2](https://github.com/EAT-JBCOMMUNITY/EAT/pull/171).
 
 
 PROJECT URL
