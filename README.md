@@ -54,6 +54,7 @@ During the 2nd phase of this project, I implemented basic support for integratin
 List of Commits
 ----------------------------
 [f1e0468](https://github.com/EAT-JBCOMMUNITY/EAT/commit/f1e0468834a7f067ad06a5f2fc57d8853bee439b) Adding Wildfly 24.0.0
+
 [3b9dbd3](https://github.com/EAT-JBCOMMUNITY/EAT/commit/3b9dbd39f02fea6a47c70e5b3f5fe462641454de) Adding Gradle Support for the Wildfly Server
 
 PROJECT URL
