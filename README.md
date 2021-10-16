@@ -1,66 +1,86 @@
-GSoC submission 2021
-===================
+Instagram Scrapy Spider
+=======================
 
-### GSoC-2021_EAT_JBoss-Community
+Overview
+---------
+This repository provides with a web scraper based on the Scrapy framework that is designed to extract public data from Instagram profiles and calculate popularity metrics for posts and content creators. 
 
-----------
+The present web scraper is part of my thesis with the title of "From digital footprints to facts: mining social data for marketing practices", whose aim was to collect public data from popular Greek Instagram and YouTube profiles and draw conclusions about:
+1. the digital behavior and preferences of the Greek Instagram and YouTube community
+2. the activity of Greek businesses on social media
+3. the impact of COVID-19 on the digital behavior of the users
 
-Introduction
--------------
+Requirements
+------------
+In order to use this web scraper you have to:
+1. Install Python 3.6+
+2. Install Scrapy
+3. Install Mozilla Browser
+4. Install MongoDB and create a MongoDB database
 
-EAT is a testsuite to develop tests against infinite number of JBoss servers. It’s an innovative tool because it’s creating the test once and testing with any version of the tested software.The idea behind the project, the AT (Additional Testsuite) structure, covers a wide variety of new features that could be added to it. One of them, is the addition of a CI (Continuous Integration) tool to perform some automated testing operations. EAT is available for a number of server configurations and a CI pipeline can be built using the maven tool.
+Description
+---------------------------
 
+#### Stracture
+This web scraper has the basic stracture of a Scrapy spider with the addition of two folders: the "resources" folder and the "tools" folder.
 
-#### Advantages of EAT:
+The "resources" folder was created to store files that contain important data for the scraping mechanism, such as names of Instagram profiles.
 
-1. Writing the tests once and testing against infinite number of Application Servers.
-2. Having all the tests at one place.
-3. Comparison of the servers based on the testsuite.
-4. Guarding against regression.
-5. Faster convergence among the servers.
-6. Comparison of the servers based on tests of the past and the present.
-7. Addition of tests with possible future features that are not at the moment available.
-8. It makes possible to push a testcase of a fix regarding a specific component of the server, without the component version to have been updated at the server pom.
+The "tools" folder was created to store files that contain usually used functions, such as functions that carry out the communication with the database.
 
+####  Features
+The provided web scraper reads as input usernames of Instagram users from:
+* a database collection
+* a JSON file (located in the "resources" folder)
 
-#### Project Description
+Due to the fact that this mechanism was created in the context of my thesis, it has a few specific features:
+* it scrapes profiles with a number of followers higher than 1.000 
+* it scrapes profiles that have uploaded at least one post in 2020
+* it scrapes only the posts that were uploaded during the year 2020
+* it is based on the personalised parametrisation of the "settings.py" file, in order to avoid anti-scraping blocking 
+* it works attaching custom request headers to the sent requests, including the Cookies field
+All the above parameters can be modified.
 
-The EAT (Eap Additional Testsuite) got extended by adding a new subcategory for testing the latest, at that time, JBoss Community server. The newly added subcategory was made available for use with the CI builds.
+From each profile, the scraping mechanism collects:
+* General Information:
+    * **User Name**
+    * **User ID**
+    * **Account Type/Category**
+    * **Number of followers**
+    * **Number of followings**
+    * **Number of posts**
+    * **Number of videos**
+* Fields of each uploaded post:
+    * **Post ID**
+    * **Post Type** (Photo, Video or Slideshow)
+    * **Upload Date**
+    * **Number of Likes**
+    * **Number of Comments**
+    * **Number of Views**, in case of Video post
+    * **Tagged Users**
+    * **Hashtags**
+* Fields of each slide in a Slideshow:
+    * **Slide ID**
+    * **Slide Type**
+    * **Slide Views**, in case of Video slide
 
-Support for the Gradle tool was built to integrate it with the EAT framework, allowing Gradle-based builds to take advantage of the EAT framework’s capabilities.
+The mechanism also calculates additional metrics that help with reflecting the popularity of the collected Instagram profiles and posts:
+* Post level metrics:
+    * **er_view** : (Number of Likes / Number of Views of a video) * 100
+    * **er_post** : (Number of Likes / Number of followers) * 100
+    * **er_comments post** : ((Number of Likes + Number of Comments) / Number of followers) * 100
+* Account level metrics:
+    * **avg_likes** : Average number of Likes, based on the collected posts
+    * **avg_comments** : Average number of Comments, based on the collected posts
+    * **avg_engagement** : Average er_comments_post, based on the collected posts
+    * **avg_days_between_posts** : Average upload frequency of the account, based on the collected posts
 
+In order to handle Instagram's tactic that divides the posts of each account at subsections of 12 posts, the collection of the fields mentioned above was completed via two methods:
+* **parse()** : Handles the first 12 posts of each account
+* **parse_pages()** : Handles the next dozens of posts of each account
 
-
-Project Timeline - Results
-------------------------------
-
-The implementation of this project was divided in two phases:
-
-#### Phase 1
-
-At the begining of the 1st phase of this project I studied the documented features of the new, at that time, JBoss versions. 
-
-Afterwards, I downloaded and built the [Wildfly](https://github.com/wildfly/wildfly) JBoss server and then tested it using [EAT](https://github.com/EAT-JBCOMMUNITY/EAT).
-
-The next step was to add the 24.0.0 version of the Wildfly server in EAT [EAT PR 1](https://github.com/EAT-JBCOMMUNITY/EAT/pull/159).
-
-Finally, I studied the support for lifecycles offered by Maven and Gradle, in order to be able to implement basic support for integrating Gradle with the EAT during the next phase of the project.
-
-
-#### Phase 2
-
-During the 2nd phase of this project, I implemented basic support for integrating Gradle with the EAT framework and specifically the Wildfly Server [EAT PR 2](https://github.com/EAT-JBCOMMUNITY/EAT/pull/171).
-
-List of Commits
-----------------------------
-[f1e0468](https://github.com/EAT-JBCOMMUNITY/EAT/commit/f1e0468834a7f067ad06a5f2fc57d8853bee439b) Adding Wildfly 24.0.0
-
-[3b9dbd3](https://github.com/EAT-JBCOMMUNITY/EAT/commit/3b9dbd39f02fea6a47c70e5b3f5fe462641454de) Adding Gradle Support for the Wildfly Server
-
-PROJECT URL
-----------------------------
-[Project URL](https://github.com/EAT-JBCOMMUNITY/EAT)
-
-EAT WORKSHOP
-----------------------------
-[EAT Workshop](https://www.dropbox.com/s/bebhyd1iz7cg1i2/EAT_WORKSHOP.odt?dl=0)
+As soon as all the necessary fields have been collected, they are being grouped and stored as documents in the MongoDB database, using the file "pipelines.py". The structure of each document is as follows:
+* **personal_info** : An object containing all the collected general information of an account mentioned above
+* **tagged_users** : An object containing all the unique users that have been mentioned in the collected posts of an account
+* **hashtags** : An object containing all the unique hashtags that have been mentioned in the collected posts of an account
+* **user_posts** : An array containing the fields of all the collected posts of an account 
