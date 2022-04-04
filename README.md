@@ -1,7 +1,7 @@
-GSoC submission 2020
+GSoC submission 2021
 ===================
 
-### GSoC-2020_EAT_JBoss-Community
+### GSoC-2021_EAT_JBoss-Community
 
 ----------
 
